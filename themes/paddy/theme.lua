@@ -1,10 +1,10 @@
-local homedir = os.getenv("HOME")
-local confdir = homedir .. "/.config/awesome"
+local homedir  = os.getenv("HOME")
+local confdir  = homedir .. "/.config/awesome"
 local themedir = confdir .. "/themes/paddy"
 
 theme = {}
 
-theme.font          = " Dejavu Sans 10"
+theme.font          = "Dejavu Sans 10"
 
 theme.bg_normal     = "#343838"
 theme.bg_focus      = "#343838"
@@ -32,15 +32,15 @@ theme.level_colors = {
 }
 
 -- Display the taglist squares
---theme.taglist_squares_sel   = "/usr/share/awesome/themes/default/taglist/squarefw.png"
---theme.taglist_squares_unsel = "/usr/share/awesome/themes/default/taglist/squarew.png"
+theme.taglist_squares_sel   = themedir .. "/taglist/squarefw.png"
+theme.taglist_squares_unsel = themedir .. "/taglist/squarew.png"
 
 -- Set wallpaper
 local wallpaper_path = homedir .. "/Pictures/wallpapers/abstract.png"
 
 -- Set a different wallpaper based on the number of screens
 if screen.count() > 1 then
-	wallpaper_path = homedir .. "/Pictures/wallpapers/abstract.png"
+    wallpaper_path = homedir .. "/Pictures/wallpapers/abstract.png"
 end
 
 theme.wallpaper_cmd = { "awsetbg " .. wallpaper_path }
