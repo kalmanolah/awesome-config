@@ -1,0 +1,5 @@
+for x in *.xbm; do convert -transparent white -fill "#6b8ba3" -opaque "#000000" -bordercolor transparent -border 8x8 -gravity center -crop 15x15+0+0 "${x}" "${x%.*}.png"; done
+
+Replace 8x8 with the real size of the icons
+Replace 15x15 with the full size of the images you're going for
+Replace #6b8ba3 with the icon color
