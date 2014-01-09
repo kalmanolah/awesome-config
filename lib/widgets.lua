@@ -118,7 +118,7 @@ function redrawNowPlayingWidget()
     local nowplaying_tmp = io.open(vars.home_dir .. ".bin/nowplaying.tmp")
     local nowplaying = ''
     if nowplaying_tmp then
-        owplaying = nowplaying_tmp:read()
+        nowplaying = nowplaying_tmp:read()
         nowplaying_tmp:close()
     end
 
@@ -151,7 +151,7 @@ vicious.register(widget_nowplaying, redrawNowPlayingWidget, nil, 10)
 
 -- {{{ Unread Thunderbird mail widget
 function redrawMailWidget()
-    local unread_tmp = io.open(vars.home_dir .. ".bin/unread.tmp") 
+    local unread_tmp = io.open(vars.home_dir .. ".bin/unread.tmp")
     local unread_count = 0
     if unread_tmp then
         unread_count = unread_tmp:read()
