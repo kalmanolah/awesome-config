@@ -30,6 +30,12 @@ awful.rules.rules = {
       callback = function( c )
            c:geometry( { width = 620 , height = 320 } )
            awful.client.moveresize(110, 640, 1, 1, c)
+      end },
+    { rule = { class = "Gvim" },
+      properties = { floating = true, size_hints_honor = false },
+      callback = function( c )
+           --awful.client.moveresize(110, 640, 1, 1, c)
+           awful.placement.centered(c)
       end }
 }
 -- }}}
