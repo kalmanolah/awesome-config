@@ -36,12 +36,7 @@ theme.taglist_squares_sel   = themedir .. "/taglist/squarefw.png"
 theme.taglist_squares_unsel = themedir .. "/taglist/squarew.png"
 
 -- Set wallpaper
-local wallpaper_path = homedir .. "/Pictures/wallpapers/abstract.png"
-
--- Set a different wallpaper based on the number of screens
-if screen.count() > 1 then
-    wallpaper_path = homedir .. "/Pictures/wallpapers/abstract.png"
-end
+local wallpaper_path = homedir .. "/Pictures/wallpapers/wallpaper_" .. screen.count() .. "x.png"
 
 theme.wallpaper_cmd = { "awsetbg " .. wallpaper_path }
 
