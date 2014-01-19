@@ -454,7 +454,7 @@ table.insert(mywidgets[screen.count()]["right"], widget_spacer)
 -- Create the wibox for each screen
 for s = 1, screen.count() do
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", height = "26", screen = s })
+    mywibox[s] = awful.wibox({ position = "top", height = "24", screen = s })
 
     local widgets_left = { layout = awful.widget.layout.horizontal.leftright }
     for i = 1, #mywidgets[s]["left"] do
@@ -602,7 +602,7 @@ awful.rules.rules = {
     {
         rule       = { },
         properties = {
-            border_width     = beautiful.border_width,
+            border_width     = 2,--beautiful.border_width,
             border_color     = beautiful.border_normal,
             focus            = true,
             keys             = clientkeys,

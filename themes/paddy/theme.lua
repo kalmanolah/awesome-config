@@ -21,7 +21,7 @@ theme.border_normal = "#333333"
 theme.border_focus  = "#333333"
 theme.border_marked = "#333333"
 
-theme.useless_gap_width = "12"
+theme.useless_gap_width = "14"
 
 theme.level_colors = {
     "#E1F5C4",
