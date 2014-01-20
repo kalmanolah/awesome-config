@@ -38,6 +38,6 @@ theme.taglist_squares_unsel = themedir .. "/taglist/squarew.png"
 -- Set wallpaper
 local wallpaper_path = homedir .. "/Pictures/wallpapers/wallpaper_" .. screen.count() .. "x.png"
 
-theme.wallpaper_cmd = { "awsetbg " .. wallpaper_path }
+theme.wallpaper_cmd = { "awsetbg -t " .. wallpaper_path }
 
 return theme
