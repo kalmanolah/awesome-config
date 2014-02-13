@@ -528,12 +528,12 @@ globalkeys = awful.util.table.join(
 
     -- Take a screenshot
     awful.key({ vars.modkey,           }, "End", function() awful.util.spawn("sh "..vars.home_dir.."bin/capscreen") end),
-    awful.key({ vars.modkey, "Control" }, "Home", function() awful.util.spawn_with_shell("urxvt -name desktopthread -e ~/bin/desktopthread") end)
+    awful.key({ vars.modkey, "Control" }, "Home", function() awful.util.spawn_with_shell("urxvt -name desktopthread -e ~/bin/desktopthread") end),
 
     -- Sound control (unless it's handled by the underlying gnome session or something)
-    --awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 9%+") end),
-    --awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 9%-") end),
-    --awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer sset Master toggle") end)
+    awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 9%+") end),
+    awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 9%-") end),
+    awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer set Master toggle") end)
 )
 -- }}}
 
