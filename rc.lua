@@ -36,6 +36,7 @@ vars.autorun    = {
     --"eval `gnome-keyring-daemon`",
     --"nm-applet &",
     --"bluetooth-applet &",
+    "numlockx on",
     "mpd && ncmpcpp pause", -- Start mpd and pause it immediately
     --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
 }
