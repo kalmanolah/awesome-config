@@ -1,9 +1,3 @@
-[submodule "vicious"]
-	path = vicious
-	url = http://git.sysphere.org/vicious
-[submodule "awesome-vain"]
-	path = awesome-vain
-	url = https://github.com/vain/awesome-vain.git
 [submodule "menubar"]
 	path = menubar
 	url = https://github.com/alexander-yakushev/menubar.git

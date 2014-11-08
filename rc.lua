@@ -17,27 +17,31 @@ menubar     = require("menubar")
 runonce     = require("runonce")
 vicious     = require("vicious")
 ror         = require("aweror")
-vain        = require("vain")
+revelation  = require("revelation")
 
 -- Set up some variables
 vars            = {}
-vars.home_dir   = os.getenv("HOME") .. "/"
-vars.conf_dir   = vars.home_dir .. ".config/awesome/"
-vars.themes_dir = vars.conf_dir .. "themes/"
-vars.icons_dir  = vars.conf_dir .. "icons/widgets/poached-ivory-24x24/"
+vars.home_dir   = os.getenv("HOME")
+vars.conf_dir   = vars.home_dir .. "/.config/awesome"
+vars.themes_dir = vars.conf_dir .. "/themes"
+vars.icons_dir  = vars.themes_dir .. "/icons"
 vars.theme      = "paddy"
+vars.icon_set   = "poached-ivory-22x22"
 vars.terminal   = "urxvt"
 vars.editor     = os.getenv("EDITOR") or "gedit"
 vars.browser    = "firefox"
 vars.modkey     = "Mod4"
+vars.lock_cmd   = "slock"
 vars.autorun    = {
-    vars.home_dir .. "bin/notify-listener.py &",
-    --vars.home_dir .. ".dropbox-dist/dropboxd &",
-    --"eval `gnome-keyring-daemon`",
-    --"nm-applet &",
-    --"bluetooth-applet &",
+    vars.home_dir .. "/bin/notify-listener.py &",
     "numlockx on",
     "mpd && ncmpcpp pause", -- Start mpd and pause it immediately
+    --vars.home_dir .. "/.dropbox-dist/dropboxd &",
+    --"eval `gnome-keyring-daemon`",
+    --"nm-applet &",
+    --"gnome-screensaver &",
+    --"bluetooth-applet &",
+    --"blueproximity &",
     --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
 }
 
@@ -81,85 +85,10 @@ awesome.quit = function()
 end
 -- }}}
 
--- {{{ Configure the menubar
-menubar.cache_entries   = true
-menubar.app_folders     = { "/usr/share/applications/" }
-menubar.show_categories = false -- Set to true for categories
---menubar.set_icon_theme("Adwaita")
--- }}}
-
-
--- {{{ Misc. theming
--- Apply transparency to notifications
-naughty.config.presets.normal.opacity   = 0.8
-naughty.config.presets.low.opacity      = 0.8
-naughty.config.presets.critical.opacity = 0.8
-beautiful.init(vars.themes_dir .. vars.theme .. "/theme.lua")
--- }}}
-
--- {{{ Set up layouts
-layouts =
-{
-    awful.layout.suit.floating,
-    vain.layout.uselessfair,
---    awful.layout.suit.tile,
---    awful.layout.suit.tile.left,
---    awful.layout.suit.tile.bottom,
---    awful.layout.suit.tile.top,
---    awful.layout.suit.fair,
---    awful.layout.suit.fair.horizontal,
---    awful.layout.suit.spiral,
---    awful.layout.suit.spiral.dwindle,
---    awful.layout.suit.max
-}
--- }}}
-
--- {{{ Set up tags
-tags = {}
-for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag(
-        {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9"
-        },
-        s,
-        {
-            layouts[1],
-            layouts[1],
-            layouts[2],
-            layouts[2],
-            layouts[2],
-            layouts[2],
-            layouts[2],
-            layouts[2],
-            layouts[2]
-        }
-    )
+-- {{{ Define some helper functions
+function getIconPath(name)
+    return vars.icons_dir .. "/" .. vars.icon_set .. "/" .. name .. ".png"
 end
--- }}}
-
--- {{{ Add in widgets and the wibox
--- {{{ Spacer
-widget_spacer      = widget({ type = "textbox" })
-widget_spacer.text = "   "
--- }}}
-
--- {{{ Clock widget
-widget_datetime      = widget({ type = "textbox" })
-vicious.register(widget_datetime, vicious.widgets.date, "%A %B %d, %R", 60)
-
-widget_datetime_icon        = widget({ type = "imagebox" })
-widget_datetime_icon.image  = image(vars.icons_dir .. "clock.png")
-widget_datetime_icon.resize = false
--- }}}
 
 function getColorByPercentage(perc)
     if perc > 90 then
@@ -181,6 +110,76 @@ function getColorByPercentage(perc)
     end
   return theme.level_colors[color]
 end
+-- }}}
+
+-- {{{ Configure the menubar
+menubar.cache_entries = true
+menubar.app_folders = { "/usr/share/applications/" }
+menubar.show_categories = false -- Set to true for categories
+--menubar.set_icon_theme("Adwaita")
+-- }}}
+
+
+-- {{{ Misc. theming
+-- Apply transparency to notifications
+naughty.config.presets.normal.opacity = 0.8
+naughty.config.presets.low.opacity = 0.8
+naughty.config.presets.critical.opacity = 0.8
+beautiful.init(vars.themes_dir .. "/" .. vars.theme .. "/theme.lua")
+-- }}}
+
+-- {{{ Set up layouts
+layouts =
+{
+    awful.layout.suit.floating,
+    awful.layout.suit.fair,
+--    awful.layout.suit.tile,
+--    awful.layout.suit.tile.left,
+--    awful.layout.suit.tile.bottom,
+--    awful.layout.suit.tile.top,
+--    awful.layout.suit.fair,
+--    awful.layout.suit.fair.horizontal,
+--    awful.layout.suit.spiral,
+--    awful.layout.suit.spiral.dwindle,
+--    awful.layout.suit.max
+}
+-- }}}
+
+-- {{{ Set up tags
+tags = {}
+for s = 1, screen.count() do
+    -- Each screen has its own tag table.
+    tags[s] = awful.tag(
+        { "1", "2", "3", "4", "5", "6", "7", "8", "9" },
+        s,
+        {
+            layouts[2],
+            layouts[2],
+            layouts[2],
+            layouts[2],
+            layouts[2],
+            layouts[2],
+            layouts[2],
+            layouts[2],
+            layouts[2]
+        }
+    )
+end
+-- }}}
+
+-- {{{ Add in widgets and the wibox
+-- {{{ Spacer widget
+widget_spacer = widget({ type = "textbox" })
+widget_spacer.text = "   "
+-- }}}
+
+-- {{{ Clock widget
+widget_datetime = widget({ type = "textbox" })
+vicious.register(widget_datetime, vicious.widgets.date, "%A %B %d, %R", 60)
+
+widget_datetime_icon = widget({ type = "imagebox" })
+widget_datetime_icon.image  = image(getIconPath('clock'))
+-- }}}
 
 -- {{{ Battery widget
 widget_battery = widget({ type = "textbox" })
@@ -195,9 +194,8 @@ vicious.register(
     "BAT0"
 )
 
-widget_battery_icon        = widget({ type = "imagebox" })
-widget_battery_icon.image  = image(vars.icons_dir .. "bat_full_01.png")
-widget_battery_icon.resize = false
+widget_battery_icon = widget({ type = "imagebox" })
+widget_battery_icon.image = image(getIconPath('bat_full_01'))
 -- }}}
 
 -- {{{ RAM usage widget
@@ -213,9 +211,8 @@ vicious.register(
     2
 )
 
-widget_ram_icon        = widget({ type = "imagebox" })
-widget_ram_icon.image  = image(vars.icons_dir .. "mem.png")
-widget_ram_icon.resize = false
+widget_ram_icon = widget({ type = "imagebox" })
+widget_ram_icon.image = image(getIconPath('mem'))
 -- }}}
 
 -- {{{ CPU usage widget
@@ -230,9 +227,8 @@ vicious.register(
     2
 )
 
-widget_cpu_icon        = widget({ type = "imagebox" })
-widget_cpu_icon.image  = image(vars.icons_dir .. "cpu.png")
-widget_cpu_icon.resize = false
+widget_cpu_icon = widget({ type = "imagebox" })
+widget_cpu_icon.image = image(getIconPath('cpu'))
 -- }}}
 
 -- {{{ Volume widget
@@ -255,21 +251,20 @@ widget_volume:buttons(awful.util.table.join(
     awful.button({ }, 1, function () ror.run_or_raise('pavucontrol', { class = "Pavucontrol" }) end)
 ))
 
-widget_volume_icon        = widget({ type = "imagebox" })
-widget_volume_icon.image  = image(vars.icons_dir .. "spkr_01.png")
-widget_volume_icon.resize = false
+widget_volume_icon = widget({ type = "imagebox" })
+widget_volume_icon.image = image(getIconPath('spkr_01'))
 -- }}}
 
 -- {{{ Now playing widget
 function redrawNowPlayingWidget()
-    local nowplaying_tmp = io.open(vars.home_dir .. "bin/nowplaying.tmp")
+    local nowplaying_tmp = io.open(vars.home_dir .. "/bin/nowplaying.tmp")
     local nowplaying = ''
     if nowplaying_tmp then
         nowplaying = nowplaying_tmp:read()
         nowplaying_tmp:close()
     end
 
-    os.execute("python " .. vars.home_dir .. "bin/nowplaying --utf-8 --html-safe > " .. vars.home_dir .. "bin/nowplaying.tmp &")
+    os.execute("python " .. vars.home_dir .. "/bin/nowplaying --utf-8 --html-safe > " .. vars.home_dir .. "/bin/nowplaying.tmp &")
 
     if nowplaying ~= nil and nowplaying ~= '' then
         widget_nowplaying.visible        = true
@@ -283,13 +278,12 @@ function redrawNowPlayingWidget()
     end
 end
 
-widget_nowplaying_icon         = widget({ type = "imagebox" })
-widget_nowplaying_icon.image   = image(vars.icons_dir .. "phones.png")
-widget_nowplaying_icon.resize  = false
+widget_nowplaying_icon = widget({ type = "imagebox" })
+widget_nowplaying_icon.image = image(getIconPath('phones'))
 widget_nowplaying_icon.visible = false
 
-widget_nowplaying_spacer         = widget({ type = "textbox" })
-widget_nowplaying_spacer.text    = "   "
+widget_nowplaying_spacer = widget({ type = "textbox" })
+widget_nowplaying_spacer.text = "   "
 widget_nowplaying_spacer.visible = false
 
 widget_nowplaying = widget({ type = "textbox" })
@@ -298,13 +292,13 @@ vicious.register(widget_nowplaying, redrawNowPlayingWidget, nil, 10)
 
 -- {{{ Unread Thunderbird mail widget
 function redrawMailWidget()
-    local unread_tmp = io.open(vars.home_dir .. "bin/unread.tmp")
+    local unread_tmp = io.open(vars.home_dir .. "/bin/unread.tmp")
     local unread_count = 0
     if unread_tmp then
         unread_count = unread_tmp:read()
         unread_tmp:close()
     end
-    os.execute("python " .. vars.home_dir .. "bin/unread > " .. vars.home_dir .. "bin/unread.tmp &")
+    os.execute("python " .. vars.home_dir .. "/bin/unread > " .. vars.home_dir .. "/bin/unread.tmp &")
 
     unread_count = tonumber(unread_count)
 
@@ -320,13 +314,12 @@ function redrawMailWidget()
     end
 end
 
-widget_mail_icon         = widget({ type = "imagebox" })
-widget_mail_icon.image   = image(vars.icons_dir .. "mail.png")
-widget_mail_icon.resize  = false
+widget_mail_icon = widget({ type = "imagebox" })
+widget_mail_icon.image = image(getIconPath('mail'))
 widget_mail_icon.visible = false
 
-widget_mail_spacer         = widget({ type = "textbox" })
-widget_mail_spacer.text    = "   "
+widget_mail_spacer = widget({ type = "textbox" })
+widget_mail_spacer.text = "   "
 widget_mail_spacer.visible = false
 
 widget_mail = widget({ type = "textbox" })
@@ -334,15 +327,15 @@ vicious.register(widget_mail, redrawMailWidget, nil, 60)
 -- }}}
 
 -- Create a systray
-mysystray         = widget({ type = "systray" })
+mysystray = widget({ type = "systray" })
 mysystray.visible = false
 
 -- Create a wibox for each screen and add it
-mywibox     = {}
+mywibox = {}
 mypromptbox = {}
 mylayoutbox = {}
 
-mytaglist   = {}
+mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
     awful.button({             }, 1, awful.tag.viewonly),
     awful.button({ vars.modkey }, 1, awful.client.movetotag),
@@ -395,9 +388,11 @@ for s = 1, screen.count() do
     }
 end
 
--- Add a taglist to the first screen
-table.insert(mywidgets[1]["left"], widget_spacer)
-table.insert(mywidgets[1]["left"], awful.widget.taglist(1, awful.widget.taglist.label.all, mytaglist.buttons))
+-- Add a taglist to each screen
+for s = 1, screen.count() do
+    table.insert(mywidgets[s]["left"], widget_spacer)
+    table.insert(mywidgets[s]["left"], awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons))
+end
 
 -- Add a promptbox to the first screen
 mypromptbox = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
@@ -455,7 +450,7 @@ table.insert(mywidgets[screen.count()]["right"], widget_spacer)
 -- Create the wibox for each screen
 for s = 1, screen.count() do
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", height = "24", screen = s })
+    mywibox[s] = awful.wibox({ position = "top", height = "22", screen = s })
 
     local widgets_left = { layout = awful.widget.layout.horizontal.leftright }
     for i = 1, #mywidgets[s]["left"] do
@@ -483,10 +478,26 @@ for s = 1, screen.count() do
 end
 -- }}}
 
+-- {{{ Main menu
+myawesomemenu = {
+    { "lock", vars.lock_cmd },
+    { "manual", vars.terminal .. " -e man awesome" },
+    { "restart", awesome.restart },
+    { "quit", awesome.quit }
+}
+
+mymainmenu = awful.menu.new({
+    items = {
+        { "terminal", vars.terminal },
+        { "awesome", myawesomemenu, beautiful.awesome_icon }
+    }
+})
+-- }}}
+
 -- {{{ Define all key & mouse bindings
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
-    --awful.button({ }, 3, function () mymainmenu:toggle() end),
+    awful.button({ }, 3, function () mymainmenu:toggle() end)
     --awful.button({ }, 4, awful.tag.viewnext),
     --awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -495,14 +506,14 @@ root.buttons(awful.util.table.join(
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     -- View previous workspace
-    awful.key({ vars.modkey,           }, "Left",   awful.tag.viewprev       ),
+    awful.key({ vars.modkey }, "Left", awful.tag.viewprev ),
     -- View next workspace
-    awful.key({ vars.modkey,           }, "Right",  awful.tag.viewnext       ),
+    awful.key({ vars.modkey }, "Right", awful.tag.viewnext ),
     -- View last viewed workspace
-    awful.key({ vars.modkey,           }, "Escape", awful.tag.history.restore),
+    awful.key({ vars.modkey }, "Escape", awful.tag.history.restore),
 
     -- Focus next window on workspace
-    awful.key({ vars.modkey,           }, "Tab",
+    awful.key({ vars.modkey }, "Tab",
         function ()
             awful.client.focus.byidx( 1)
             if client.focus then client.focus:raise() end
@@ -510,26 +521,31 @@ globalkeys = awful.util.table.join(
     ),
 
     -- Start a vars.terminal
-    awful.key({ vars.modkey,           }, "Return", function () awful.util.spawn(vars.terminal) end),
+    awful.key({ vars.modkey }, "Return", function () awful.util.spawn(vars.terminal) end),
 
     -- Restart awesome
     awful.key({ vars.modkey, "Control" }, "r", awesome.restart),
-    -- Quit awesome
-    awful.key({ vars.modkey, "Shift"   }, "q", awesome.quit),
+    -- -- Quit awesome
+    -- awful.key({ vars.modkey, "Control" }, "q", awesome.quit),
+
+    -- Revelation
+    awful.key({ vars.modkey }, "z", revelation),
 
     -- Switch the current workspace's layout to the next one
-    awful.key({ vars.modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
+    awful.key({ vars.modkey }, "space", function () awful.layout.inc(layouts, 1) end),
     -- Maximize clients on workspace
     awful.key({ vars.modkey, "Control" }, "n", awful.client.restore),
 
     -- Start a run prompt
-    awful.key({ vars.modkey },            "r",     function () mypromptbox:run() end),
+    awful.key({ vars.modkey }, "r", function () mypromptbox:run() end),
     -- Start a prompt using the menubar
-    awful.key({ vars.modkey },            "p",     function () menubar.show() end),
+    awful.key({ vars.modkey }, "p", function () menubar.show() end),
 
     -- Take a screenshot
-    awful.key({ vars.modkey,           }, "End", function() awful.util.spawn("sh "..vars.home_dir.."bin/capscreen") end),
-    awful.key({ vars.modkey, "Control" }, "Home", function() awful.util.spawn_with_shell("urxvt -name desktopthread -e ~/bin/desktopthread") end),
+    awful.key({ vars.modkey }, "End", function() awful.util.spawn("sh "..vars.home_dir.."/bin/capscreen") end),
+
+    -- Lock machine
+    awful.key({ vars.modkey, "Control" }, "l", function() awful.util.spawn(vars.lock_cmd) end),
 
     -- Sound control (unless it's handled by the underlying gnome session or something)
     awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 9%+") end),
@@ -540,7 +556,7 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     -- Close a client
-    awful.key({ vars.modkey,            }, "F4",      function (c) c:kill()                         end)
+    awful.key({ vars.modkey }, "F4", function (c) c:kill() end)
 )
 
 -- Compute the maximum number of digit we need, limited to 9
@@ -603,7 +619,7 @@ awful.rules.rules = {
     {
         rule       = { },
         properties = {
-            border_width     = 2,--beautiful.border_width,
+            border_width     = 1,--beautiful.border_width,
             border_color     = beautiful.border_normal,
             focus            = true,
             keys             = clientkeys,
@@ -630,12 +646,6 @@ awful.rules.rules = {
       properties = { tag = tags[screen.count()][7], switchtotag = true } },
     { rule = { class = "Sublime_text" },
       properties = { tag = tags[1][9], switchtotag = true } },
-    { rule = { name = "desktopthread" },
-      properties = { tag = tags[1][1], switchtotag = true, floating = true },
-      callback = function( c )
-           c:geometry( { width = 620 , height = 320 } )
-           awful.client.moveresize(110, 640, 1, 1, c)
-      end },
     { rule = { class = "Gvim" },
       properties = { floating = true, size_hints_honor = false },
       callback = function( c )
@@ -675,12 +685,7 @@ end)
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
--- Only show the systray if we're on the final workspace
---for s = 1, screen.count() do
---    tags[s][#tags[s]]:add_signal("property::selected", function(tag)
---        mysystray.visible = tag.selected
---    end)
---end
+-- Only show the systray if we're on the final workspace of the last screen
 tags[screen.count()][#tags[screen.count()]]:add_signal("property::selected", function(tag)
     mysystray.visible = tag.selected
 end)
