@@ -642,6 +642,8 @@ awful.rules.rules = {
       properties = { tag = tags[1][5], switchtotag = true } },
     { rule = { class = "Iceweasel" },
       properties = { tag = tags[1][5], switchtotag = true } },
+    { rule = { instance = "plugin-container" },
+      properties = { floating = true } },
     { rule = { class = "Thunderbird" },
       properties = { tag = tags[1][6], switchtotag = true } },
     { rule = { class = "Icedove" },
