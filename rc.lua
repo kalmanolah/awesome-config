@@ -35,7 +35,8 @@ vars.lock_cmd   = "slock"
 vars.autorun    = {
     vars.home_dir .. "/bin/notify-listener.py &",
     "numlockx on",
-    "mpd && ncmpcpp pause", -- Start mpd and pause it immediately
+    "setxkbmap be",
+    "mpd && ncmpcpp pause",
     --vars.home_dir .. "/.dropbox-dist/dropboxd &",
     --"eval `gnome-keyring-daemon`",
     --"nm-applet &",
