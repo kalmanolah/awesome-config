@@ -29,7 +29,7 @@ vars.theme      = "paddy"
 vars.icon_set   = "poached-ivory-22x22"
 vars.terminal   = "urxvt"
 vars.editor     = os.getenv("EDITOR") or "gedit"
-vars.browser    = "firefox"
+vars.browser    = vars.home_dir .. "/misc/firefox/firefox"
 vars.modkey     = "Mod4"
 vars.lock_cmd   = "slock"
 vars.autorun    = {
@@ -608,7 +608,7 @@ clientbuttons = awful.util.table.join(
 
 -- Generate and add the 'run or raise' key bindings to the globalkeys table
 globalkeys = awful.util.table.join(globalkeys, ror.genkeys(vars.modkey, {
-    ["f"]={"iceweasel", "Iceweasel"},
+    ["f"]={vars.browser, "Firefox"},
     --["t"]={"thunderbird", "Thunderbird"},
     ["t"]={"icedove","Icedove"},
     ["l"]={"spotify", "Spotify"},
