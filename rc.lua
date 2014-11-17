@@ -265,7 +265,7 @@ function redrawNowPlayingWidget()
         nowplaying_tmp:close()
     end
 
-    os.execute("python " .. vars.home_dir .. "/bin/nowplaying --utf-8 --html-safe > " .. vars.home_dir .. "/bin/nowplaying.tmp &")
+    os.execute(vars.home_dir .. "/bin/nowplaying --html-safe > " .. vars.home_dir .. "/bin/nowplaying.tmp &")
 
     if nowplaying ~= nil and nowplaying ~= '' then
         widget_nowplaying.visible        = true
