@@ -291,42 +291,6 @@ widget_nowplaying = widget({ type = "textbox" })
 vicious.register(widget_nowplaying, redrawNowPlayingWidget, nil, 10)
 -- }}}
 
--- {{{ Unread Thunderbird mail widget
-function redrawMailWidget()
-    local unread_tmp = io.open(vars.home_dir .. "/bin/unread.tmp")
-    local unread_count = 0
-    if unread_tmp then
-        unread_count = unread_tmp:read()
-        unread_tmp:close()
-    end
-    os.execute("python " .. vars.home_dir .. "/bin/unread > " .. vars.home_dir .. "/bin/unread.tmp &")
-
-    unread_count = tonumber(unread_count)
-
-    if unread_count ~= nil and unread_count > 0 then
-        widget_mail.visible = true
-        widget_mail_icon.visible = true
-        widget_mail_spacer.visible = true
-        return '<span color="' .. theme.level_colors[5] .. '">' .. unread_count .. '</span>'
-    else
-        widget_mail.visible = false
-        widget_mail_icon.visible = false
-        widget_mail_spacer.visible = false
-    end
-end
-
-widget_mail_icon = widget({ type = "imagebox" })
-widget_mail_icon.image = image(getIconPath('mail'))
-widget_mail_icon.visible = false
-
-widget_mail_spacer = widget({ type = "textbox" })
-widget_mail_spacer.text = "   "
-widget_mail_spacer.visible = false
-
-widget_mail = widget({ type = "textbox" })
-vicious.register(widget_mail, redrawMailWidget, nil, 60)
--- }}}
-
 -- Create a systray
 mysystray = widget({ type = "systray" })
 mysystray.visible = false
@@ -411,10 +375,6 @@ end
 
 -- Add a systray to the last screen
 table.insert(mywidgets[screen.count()]["right"], mysystray)
-
--- Add the mail widget to the last screen
-table.insert(mywidgets[screen.count()]["right"], widget_mail_icon)
-table.insert(mywidgets[screen.count()]["right"], widget_mail)
 
 -- Add the nowplaying widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_nowplaying_icon)
