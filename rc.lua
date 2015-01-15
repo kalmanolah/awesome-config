@@ -517,7 +517,12 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     -- Close a client
-    awful.key({ vars.modkey }, "F4", function (c) c:kill() end)
+    awful.key({ vars.modkey }, "F4", function (c) c:kill() end),
+    awful.key({ vars.modkey }, "F11",
+        function (c)
+            c.maximized_horizontal = not c.maximized_horizontal
+            c.maximized_vertical   = not c.maximized_vertical
+        end)
 )
 
 -- Compute the maximum number of digit we need, limited to 9
