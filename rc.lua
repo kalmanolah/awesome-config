@@ -36,8 +36,8 @@ vars.browser    = vars.home .. "/misc/firefox/firefox"
 
 vars.cmd = {
     lock       = 'slock',
-    reboot     = 'reboot',
-    shutdown   = 'shutdown',
+    reboot     = 'systemctl reboot',
+    shutdown   = 'systelctl poweroff',
     screenshot = 'scrot -m -z ~/Pictures/screenshots/\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
 }
 
