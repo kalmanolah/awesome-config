@@ -25,6 +25,7 @@ vars = {
     modkey   = 'Mod4',
 
     home     = os.getenv('HOME'),
+    confdir  = get_current_path(),
     terminal = os.getenv('TERM') or 'urxvt',
     editor   = os.getenv('EDITOR') or 'vim',
 
@@ -37,7 +38,7 @@ vars.browser    = vars.home .. "/misc/firefox/firefox"
 vars.cmd = {
     lock       = 'slock',
     reboot     = 'systemctl reboot',
-    shutdown   = 'systelctl poweroff',
+    shutdown   = 'systemctl poweroff',
     screenshot = 'scrot -m -z ~/Pictures/screenshots/\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
 }
 
@@ -53,6 +54,23 @@ vars.autorun    = {
     --"bluetooth-applet &",
     --"blueproximity &",
     --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
+}
+
+vars.layouts = {
+    awful.layout.suit.floating,
+    awful.layout.suit.fair
+}
+
+vars.tags = {
+    {"一", vars.layouts[2]},
+    {"二", vars.layouts[2]},
+    {"三", vars.layouts[2]},
+    {"四", vars.layouts[2]},
+    {"五", vars.layouts[2]},
+    {"六", vars.layouts[2]},
+    {"七", vars.layouts[2]},
+    {"八", vars.layouts[2]},
+    {"九", vars.layouts[2]}
 }
 
 -- Error handling
@@ -94,26 +112,20 @@ awesome.quit = function()
 end
 
 -- Initialize theme
-beautiful.init(get_theme_path(vars.theme))
+beautiful.init(vars.confdir .. "themes/" .. vars.theme .. "/theme.lua")
 
--- {{{ Configure the menubar
+-- -- {{{ Configure the menubar
 menubar.cache_entries = true
 menubar.app_folders = { "/usr/share/applications/" }
 menubar.show_categories = false -- Set to true for categories
 --menubar.set_icon_theme("Adwaita")
--- }}}
-
--- Set up layouts
-layouts = {
-    awful.layout.suit.floating,
-    awful.layout.suit.fair
-}
+-- -- }}}
 
 -- Set up tags
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({"一", "二", "三", "四", "五", "六", "七", "八", "九"}, s, layouts[2])
+    tags[s] = awful.tag(table_column(vars.tags, 1), s, table_column(vars.tags, 2))
 end
 
 -- {{{ Add in widgets and the wibox
@@ -206,14 +218,14 @@ widget_volume_icon.image = image(get_icon_path('spkr_01'))
 
 -- {{{ Now playing widget
 function redrawNowPlayingWidget()
-    local nowplaying_tmp = io.open(vars.home .. "/bin/nowplaying.tmp")
+    local nowplaying_tmp = io.open(vars.confdir .. "scripts/now_playing.tmp")
     local nowplaying = ''
     if nowplaying_tmp then
         nowplaying = nowplaying_tmp:read()
         nowplaying_tmp:close()
     end
 
-    os.execute(vars.home .. "/bin/nowplaying --html-safe > " .. vars.home .. "/bin/nowplaying.tmp &")
+    os.execute(vars.confdir .. "scripts/now_playing.py --html-safe > " .. vars.confdir .. "scripts/now_playing.tmp &")
 
     if nowplaying ~= nil and nowplaying ~= '' then
         widget_nowplaying.visible        = true
@@ -398,8 +410,7 @@ mainmenu = awful.menu.new({
         }},
         {"system", {
             {"lock", vars.cmd.lock},
-            {"reboot", vars.cmd.reboot},
-            {"shutdown", vars.cmd.shutdown}
+            {"logout", vars.confdir .. "scripts/shutdown_dialog.sh"}
         }}
     }
 })
@@ -429,7 +440,7 @@ globalkeys = awful.util.table.join(
     ),
 
     -- Switch the current workspace's layout to the next one
-    awful.key({ vars.modkey }, "space", function () awful.layout.inc(layouts, 1) end),
+    awful.key({ vars.modkey }, "space", function () awful.layout.inc(vars.layouts, 1) end),
 
     -- Maximize all clients on workspace
     awful.key({ vars.modkey, "Control" }, "n", awful.client.restore),
@@ -459,7 +470,8 @@ globalkeys = awful.util.table.join(
 
     -- Power management stuff
     awful.key({ vars.modkey, "Control" }, "l", function() awful.util.spawn(vars.cmd.lock) end),
-    awful.key({ }, "XF86PowerOff", function () awful.util.spawn(vars.cmd.lock) end)
+    awful.key({ }, "XF86PowerOff", function () awful.util.spawn(vars.cmd.lock) end),
+    awful.key({ vars.modkey, "Control" }, "h", function() awful.util.spawn(vars.confdir .. "scripts/shutdown_dialog.sh") end)
 )
 
 -- Bind all key numbers to tags and add the bindings to the globalkeys table.

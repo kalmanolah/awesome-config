@@ -7,10 +7,6 @@ function get_icon_path(name)
     return get_current_path() .. 'themes/icons/' .. vars.icons .. '/' .. name .. '.png'
 end
 
-function get_theme_path(theme)
-    return get_current_path() .. 'themes/' .. theme .. '/theme.lua'
-end
-
 function get_color_by_percentage(perc)
     if perc > 90 then
        color = 1
@@ -30,4 +26,12 @@ function get_color_by_percentage(perc)
       end
     end
   return theme.level_colors[color]
+end
+
+function table_column(tbl, idx)
+  result = {}
+  for k,v in pairs(tbl) do
+    table.insert(result, v[idx])
+  end
+  return result
 end

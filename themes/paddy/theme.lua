@@ -23,6 +23,8 @@ theme.border_normal = "#333333"
 theme.border_focus  = "#666666"
 theme.border_marked = "#333333"
 
+theme.useless_gap_width = 0
+
 theme.taglist_squares       = true
 theme.taglist_squares_sel   = get_current_path() .. "taglist/squarefw.png"
 theme.taglist_squares_unsel = get_current_path() .. "taglist/squarew.png"
