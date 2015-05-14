@@ -58,7 +58,9 @@ vars.autorun    = {
 
 vars.layouts = {
     awful.layout.suit.floating,
-    awful.layout.suit.fair
+    awful.layout.suit.fair,
+    awful.layout.suit.spiral,
+    awful.layout.suit.magnifier
 }
 
 vars.tags = {
