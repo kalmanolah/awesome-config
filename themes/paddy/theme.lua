@@ -1,8 +1,3 @@
--- Notifications
-naughty.config.presets.normal.opacity = 0.8
-naughty.config.presets.low.opacity = 0.8
-naughty.config.presets.critical.opacity = 0.8
-
 -- Create theme object
 theme = {}
 
@@ -29,14 +24,8 @@ theme.taglist_squares       = true
 theme.taglist_squares_sel   = get_current_path() .. "taglist/squarefw.png"
 theme.taglist_squares_unsel = get_current_path() .. "taglist/squarew.png"
 
-theme.wallpaper_cmd = { "awsetbg -t " .. vars.home .. "/Pictures/wallpapers/wallpaper_" .. screen.count() .. "x.png" }
+theme.tasklist_disable_icon = true
 
-theme.level_colors = {
-    "#E1F5C4",
-    "#EDE574",
-    "#F9D423",
-    "#FC913A",
-    "#FF4E50"
-}
+theme.wallpaper = vars.home .. "/Pictures/wallpapers/wallpaper_" .. screen.count() .. "x.png"
 
 return theme

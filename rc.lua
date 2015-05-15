@@ -4,21 +4,25 @@
 -- @author: Kalman Olah
 --
 
--- Standard awesome libraries
-awful       = require("awful")
-awful.rules = require("awful.autofocus")
-              require("awful.rules")
-beautiful   = require("beautiful")
-naughty     = require("naughty")
-wibox       = require("wibox")
+-- Standard awesome library
+local gears = require("gears")
+local awful = require("awful")
+awful.rules = require("awful.rules")
+require("awful.autofocus")
+-- Widget and layout library
+local wibox = require("wibox")
+-- Theme handling library
+local beautiful = require("beautiful")
+-- Notification library
+local naughty = require("naughty")
+local menubar = require("menubar")
 
 -- Additional libraries and scripts
-menubar     = require("menubar")
-runonce     = require("runonce")
-vicious     = require("vicious")
-ror         = require("aweror")
-revelation  = require("revelation")
-helpers     = require("helpers")
+local runonce     = require("runonce")
+local vicious     = require("vicious")
+local ror         = require("aweror")
+local revelation  = require("revelation")
+local helpers     = require("helpers")
 
 -- Set up some variables
 vars = {
@@ -59,7 +63,15 @@ vars.autorun    = {
 vars.layouts = {
     awful.layout.suit.floating,
     awful.layout.suit.fair,
+    awful.layout.suit.fair.horizontal,
+    awful.layout.suit.tile,
+    awful.layout.suit.tile.left,
+    awful.layout.suit.tile.bottom,
+    awful.layout.suit.tile.top,
     awful.layout.suit.spiral,
+    awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.max,
+    awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
 
@@ -75,33 +87,30 @@ vars.tags = {
     {"九", vars.layouts[2]}
 }
 
--- Error handling
+-- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
-    naughty.notify({
-        preset = naughty.config.presets.critical,
-        title  = "Oops, there were errors during startup!",
-        text   = awesome.startup_errors
-    })
+    naughty.notify({ preset = naughty.config.presets.critical,
+                     title = "Oops, there were errors during startup!",
+                     text = awesome.startup_errors })
 end
 
 -- Handle runtime errors after startup
 do
     local in_error = false
-    awesome.add_signal("debug::error", function (err)
+    awesome.connect_signal("debug::error", function (err)
         -- Make sure we don't go into an endless error loop
         if in_error then return end
         in_error = true
 
-        naughty.notify({
-            preset = naughty.config.presets.critical,
-            title  = "Oops, an error happened!",
-            text   = err
-        })
+        naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Oops, an error happened!",
+                         text = err })
         in_error = false
     end)
 end
+-- }}}
 
 -- We should override awesome.quit when we're using GNOME
 _awesome_quit = awesome.quit
@@ -116,9 +125,21 @@ end
 -- Initialize theme
 beautiful.init(vars.confdir .. "themes/" .. vars.theme .. "/theme.lua")
 
+-- Set wallpaper
+for s = 1, screen.count() do
+    gears.wallpaper.maximized(beautiful.wallpaper, nil, true)
+end
+
+
+-- Notifications
+naughty.config.presets.normal.opacity = 0.8
+naughty.config.presets.low.opacity = 0.8
+naughty.config.presets.critical.opacity = 0.8
+
 -- -- {{{ Configure the menubar
-menubar.cache_entries = true
-menubar.app_folders = { "/usr/share/applications/" }
+menubar.utils.terminal = vars.terminal -- Set the terminal for applications that require it
+-- menubar.cache_entries = true
+-- menubar.app_folders = { "/usr/share/applications/" }
 menubar.show_categories = false -- Set to true for categories
 --menubar.set_icon_theme("Adwaita")
 -- -- }}}
@@ -131,21 +152,51 @@ for s = 1, screen.count() do
 end
 
 -- {{{ Add in widgets and the wibox
+function get_icon_path(name)
+    return get_current_path() .. 'themes/icons/' .. vars.icons .. '/' .. name .. '.png'
+end
+
+function get_color_by_percentage(perc)
+    level_colors = {
+        "#E1F5C4",
+        "#EDE574",
+        "#F9D423",
+        "#FC913A",
+        "#FF4E50"
+    }
+    if perc > 90 then
+       color = 1
+    else
+      if perc > 75 then
+         color = 2
+      else
+        if perc > 50 then
+          color = 3
+        else
+          if perc > 25 then
+            color = 4
+          else
+            color = 5
+          end
+        end
+      end
+    end
+  return level_colors[color]
+end
+
 -- {{{ Spacer widget
-widget_spacer = widget({ type = "textbox" })
-widget_spacer.text = "   "
+widget_spacer = wibox.widget.textbox("   ")
 -- }}}
 
 -- {{{ Clock widget
-widget_datetime = widget({ type = "textbox" })
+widget_datetime = wibox.widget.textbox()
 vicious.register(widget_datetime, vicious.widgets.date, "%A %B %d, %R", 60)
 
-widget_datetime_icon = widget({ type = "imagebox" })
-widget_datetime_icon.image  = image(get_icon_path('clock'))
+widget_datetime_icon = wibox.widget.imagebox(get_icon_path("clock"))
 -- }}}
 
 -- {{{ Battery widget
-widget_battery = widget({ type = "textbox" })
+widget_battery = wibox.widget.textbox()
 vicious.register(
     widget_battery,
     vicious.widgets.bat,
@@ -157,12 +208,11 @@ vicious.register(
     "BAT0"
 )
 
-widget_battery_icon = widget({ type = "imagebox" })
-widget_battery_icon.image = image(get_icon_path('bat_full_01'))
+widget_battery_icon = wibox.widget.imagebox(get_icon_path("bat_full_01"))
 -- }}}
 
 -- {{{ RAM usage widget
-widget_ram = widget({ type = "textbox" })
+widget_ram = wibox.widget.textbox()
 vicious.register(
     widget_ram,
     vicious.widgets.mem,
@@ -174,12 +224,11 @@ vicious.register(
     2
 )
 
-widget_ram_icon = widget({ type = "imagebox" })
-widget_ram_icon.image = image(get_icon_path('mem'))
+widget_ram_icon = wibox.widget.imagebox(get_icon_path("mem"))
 -- }}}
 
 -- {{{ CPU usage widget
-widget_cpu = widget({ type = "textbox" })
+widget_cpu = wibox.widget.textbox()
 vicious.register(
     widget_cpu,
     vicious.widgets.cpu,
@@ -190,12 +239,11 @@ vicious.register(
     2
 )
 
-widget_cpu_icon = widget({ type = "imagebox" })
-widget_cpu_icon.image = image(get_icon_path('cpu'))
+widget_cpu_icon = wibox.widget.imagebox(get_icon_path("cpu"))
 -- }}}
 
 -- {{{ Volume widget
-widget_volume = widget({ type = "textbox" })
+widget_volume = wibox.widget.textbox()
 vicious.register(
     widget_volume,
     vicious.widgets.volume,
@@ -214,14 +262,14 @@ widget_volume:buttons(awful.util.table.join(
     awful.button({ }, 1, function () ror.run_or_raise('pavucontrol', { class = "Pavucontrol" }) end)
 ))
 
-widget_volume_icon = widget({ type = "imagebox" })
-widget_volume_icon.image = image(get_icon_path('spkr_01'))
+widget_volume_icon = wibox.widget.imagebox(get_icon_path("spkr_01"))
 -- }}}
 
 -- {{{ Now playing widget
 function redrawNowPlayingWidget()
     local nowplaying_tmp = io.open(vars.confdir .. "scripts/now_playing.tmp")
-    local nowplaying = ''
+    local nowplaying = ""
+
     if nowplaying_tmp then
         nowplaying = nowplaying_tmp:read()
         nowplaying_tmp:close()
@@ -229,37 +277,35 @@ function redrawNowPlayingWidget()
 
     os.execute(vars.confdir .. "scripts/now_playing.py --html-safe > " .. vars.confdir .. "scripts/now_playing.tmp &")
 
-    if nowplaying ~= nil and nowplaying ~= '' then
-        widget_nowplaying.visible        = true
-        widget_nowplaying_icon.visible   = true
-        widget_nowplaying_spacer.visible = true
-        return nowplaying
-    else
-        widget_nowplaying.visible        = false
-        widget_nowplaying_icon.visible   = false
-        widget_nowplaying_spacer.visible = false
+    if nowplaying == nil or nowplaying == '' then
+        nowplaying = "n/a"
     end
+
+    return nowplaying
 end
 
-widget_nowplaying_icon = widget({ type = "imagebox" })
-widget_nowplaying_icon.image = image(get_icon_path('phones'))
+widget_nowplaying_icon = wibox.widget.imagebox(get_icon_path("phones"))
 widget_nowplaying_icon.visible = false
 
-widget_nowplaying_spacer = widget({ type = "textbox" })
-widget_nowplaying_spacer.text = "   "
+widget_nowplaying_spacer = wibox.widget.textbox("   ")
 widget_nowplaying_spacer.visible = false
 
-widget_nowplaying = widget({ type = "textbox" })
+widget_nowplaying = wibox.widget.textbox()
 vicious.register(widget_nowplaying, redrawNowPlayingWidget, nil, 10)
 -- }}}
 
 -- Create a systray
-systray = widget({ type = "systray" })
-systray.visible = false
+systray_fixer = drawin({})
+systray_visible = false
+systray = wibox.widget.systray()
+systray_container = wibox.layout.constraint()
+systray_container:set_widget(systray)
+systray_container:set_strategy("min")
+systray_container:set_width(1)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
-mypromptbox = {}
+mypromptbox = awful.widget.prompt()
 mylayoutbox = {}
 
 mytaglist = {}
@@ -318,25 +364,18 @@ end
 -- Add a taglist to each screen
 for s = 1, screen.count() do
     table.insert(mywidgets[s]["left"], widget_spacer)
-    table.insert(mywidgets[s]["left"], awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons))
+    table.insert(mywidgets[s]["left"], awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons))
+    table.insert(mywidgets[s]["left"], widget_spacer)
 end
 
 -- Add a promptbox to the first screen
-mypromptbox = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
 table.insert(mywidgets[1]["left"], mypromptbox)
 
 -- Add a tasklist to each screen
 for s = 1, screen.count() do
-    table.insert(mywidgets[s]["left"], widget_spacer)
-    table.insert(mywidgets[s]["center"], awful.widget.tasklist(function(c)
-        local tmptask = { awful.widget.tasklist.label.currenttags(c, s) }
-        return tmptask[1], tmptask[2], tmptask[3], nil
-    end, mytasklist.buttons))
+    table.insert(mywidgets[s]["center"], awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons))
     table.insert(mywidgets[s]["right"], widget_spacer)
 end
-
--- Add a systray to the last screen
-table.insert(mywidgets[screen.count()]["right"], systray)
 
 -- Add the nowplaying widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_nowplaying_icon)
@@ -370,34 +409,41 @@ table.insert(mywidgets[screen.count()]["right"], widget_datetime)
 -- Finish off with a spacer
 table.insert(mywidgets[screen.count()]["right"], widget_spacer)
 
+-- Add an optional systray to the last screen
+table.insert(mywidgets[screen.count()]["right"], systray_container)
+
 -- Create the wibox for each screen
 for s = 1, screen.count() do
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", height = "22", screen = s })
 
-    local widgets_left = { layout = awful.widget.layout.horizontal.leftright }
+    local widgets_left = wibox.layout.fixed.horizontal()
     for i = 1, #mywidgets[s]["left"] do
-        table.insert(widgets_left, mywidgets[s]["left"][i])
+        widgets_left:add(mywidgets[s]["left"][i])
     end
 
-    local widgets_right = { layout = awful.widget.layout.horizontal.rightleft }
-    -- Flip right and centered widgets
+    local widgets_right = wibox.layout.fixed.horizontal()
+    -- Add right widgets in reverse order
     local size_right = #mywidgets[s]["right"]
     for i = 1, size_right do
-        table.insert(widgets_right, mywidgets[s]["right"][size_right - (i - 1)])
+        widgets_right:add(mywidgets[s]["right"][i])
+        -- widgets_right:add(mywidgets[s]["right"][size_right - (i - 1)])
     end
 
+    local widgets_center = wibox.layout.fixed.horizontal()
     local size_center = #mywidgets[s]["center"]
     for i = 1, size_center do
-        table.insert(widgets_right, mywidgets[s]["center"][size_center - (i - 1)])
+        widgets_center:add(mywidgets[s]["center"][i])
     end
 
     -- Set up the widgets table
-    mywibox[s].widgets = {
-        widgets_left,
-        widgets_right,
-        layout = awful.widget.layout.horizontal.leftright
-    }
+    local layout = wibox.layout.align.horizontal()
+
+    layout:set_left(widgets_left)
+    layout:set_middle(widgets_center)
+    layout:set_right(widgets_right)
+
+    mywibox[s]:set_widget(layout)
 end
 -- }}}
 
@@ -530,6 +576,12 @@ clientkeys = awful.util.table.join(
     awful.key({ vars.modkey }, "F11", function (c)
         c.maximized_horizontal = not c.maximized_horizontal
         c.maximized_vertical   = not c.maximized_vertical
+    end),
+
+    -- Toggle client titlebar
+    awful.key({ vars.modkey, "Control" }, "t", function (c)
+        -- toggle titlebar
+        awful.titlebar.toggle(c)
     end)
 )
 
@@ -590,12 +642,12 @@ awful.rules.rules = {
 }
 
 -- Signal function to execute when a new client appears.
-client.add_signal('manage', function (c, startup)
+client.connect_signal('manage', function (c, startup)
     -- Add a titlebar
     -- awful.titlebar.add(c, { modkey = vars.modkey })
 
     -- Enable sloppy focus
-    c:add_signal('mouse::enter', function(c)
+    c:connect_signal('mouse::enter', function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
             and awful.client.focus.filter(c) then
             client.focus = c
@@ -615,12 +667,23 @@ client.add_signal('manage', function (c, startup)
     end
 end)
 
-client.add_signal('focus', function(c) c.border_color = beautiful.border_focus end)
-client.add_signal('unfocus', function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal('focus', function(c) c.border_color = beautiful.border_focus end)
+client.connect_signal('unfocus', function(c) c.border_color = beautiful.border_normal end)
 
 -- Only show the systray if we're on the final workspace of the last screen
-tags[screen.count()][#tags[screen.count()]]:add_signal("property::selected", function(tag)
-    systray.visible = tag.selected
+tags[screen.count()][#tags[screen.count()]]:connect_signal("property::selected", function(tag)
+    systray_visible = not tag.selected
+
+    if systray_visible then
+        awesome.systray(systray_fixer, 0, 0, 10, true, "#000000")
+        systray_container:set_widget(nil)
+        systray_container:set_strategy("exact")
+        systray_visible = false
+    else
+        systray_container:set_strategy("min")
+        systray_container:set_widget(systray)
+        systray_visible = true
+    end
 end)
 
 -- Run applications on startup

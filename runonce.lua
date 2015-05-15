@@ -1,6 +1,7 @@
 -- @author Peter J. Kranz (Absurd-Mind, peter@myref.net)
 -- Any questions, criticism or praise just drop me an email
 
+local awful = require("awful")
 local M = {}
 
 -- get the current Pid of awesome
