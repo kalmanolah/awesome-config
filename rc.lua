@@ -125,11 +125,13 @@ end
 -- Initialize theme
 beautiful.init(vars.confdir .. "themes/" .. vars.theme .. "/theme.lua")
 
+-- Initialize revelation
+revelation.init()
+
 -- Set wallpaper
 for s = 1, screen.count() do
     gears.wallpaper.maximized(beautiful.wallpaper, nil, true)
 end
-
 
 -- Notifications
 naughty.config.presets.normal.opacity = 0.8
@@ -486,6 +488,27 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end
     ),
+
+    -- Focus next window
+    awful.key({ vars.modkey,           }, "j",
+        function ()
+            awful.client.focus.byidx( 1)
+            if client.focus then client.focus:raise() end
+        end
+    ),
+
+    -- Focus previous window
+    awful.key({ vars.modkey,           }, "k",
+        function ()
+            awful.client.focus.byidx(-1)
+            if client.focus then client.focus:raise() end
+    end),
+
+    -- Layout manipulation
+    awful.key({ vars.modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
+    awful.key({ vars.modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
+    awful.key({ vars.modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
+    awful.key({ vars.modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
 
     -- Switch the current workspace's layout to the next one
     awful.key({ vars.modkey }, "space", function () awful.layout.inc(vars.layouts, 1) end),
