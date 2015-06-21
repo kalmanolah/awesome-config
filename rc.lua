@@ -18,6 +18,7 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 
 -- Additional libraries and scripts
+local lain        = require("lain")
 local runonce     = require("runonce")
 local vicious     = require("vicious")
 local ror         = require("aweror")
@@ -72,14 +73,16 @@ vars.layouts = {
     awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
     awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier
+    awful.layout.suit.magnifier,
+    lain.layout.termfair,
+    lain.layout.centerfair
 }
 
 vars.tags = {
     {"一", vars.layouts[2]},
     {"二", vars.layouts[2]},
     {"三", vars.layouts[2]},
-    {"四", vars.layouts[2]},
+    {"四", vars.layouts[13]},
     {"五", vars.layouts[2]},
     {"六", vars.layouts[2]},
     {"七", vars.layouts[2]},
@@ -146,6 +149,13 @@ menubar.show_categories = false -- Set to true for categories
 --menubar.set_icon_theme("Adwaita")
 -- -- }}}
 
+-- Set up layouts
+lain.layout.termfair.nmaster = 2
+lain.layout.termfair.ncol = 1
+
+lain.layout.centerfair.nmaster = 2
+lain.layout.centerfair.ncol = 1
+
 -- Set up tags
 tags = {}
 for s = 1, screen.count() do
@@ -188,77 +198,68 @@ end
 
 -- {{{ Spacer widget
 widget_spacer = wibox.widget.textbox("   ")
+-- widget_spacer_r = lain.util.separators.arrow_left(beautiful.bg_focus, "alpha")
+-- widget_spacer_l = separators.arrow_left("alpha", beautiful.bg_focus)
 -- }}}
 
 -- {{{ Clock widget
-widget_datetime = wibox.widget.textbox()
-vicious.register(widget_datetime, vicious.widgets.date, "%A %B %d, %R", 60)
+widget_datetime = awful.widget.textclock.new("%A %B %d, %R", 60)
 
 widget_datetime_icon = wibox.widget.imagebox(get_icon_path("clock"))
 -- }}}
 
 -- {{{ Battery widget
-widget_battery = wibox.widget.textbox()
-vicious.register(
-    widget_battery,
-    vicious.widgets.bat,
-    function (widget, args)
-        local battery_level = tonumber(args[2])
-        return "<span color='" .. get_color_by_percentage(battery_level) .. "'>" .. battery_level .. "</span>%"
-    end,
-    61,
-    "BAT0"
-)
+widget_bat = lain.widgets.bat({
+    settings = function()
+        widget:set_markup("<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%")
+    end
+})
 
-widget_battery_icon = wibox.widget.imagebox(get_icon_path("bat_full_01"))
+widget_bat_icon = wibox.widget.imagebox(get_icon_path("bat_full_01"))
 -- }}}
 
--- {{{ RAM usage widget
-widget_ram = wibox.widget.textbox()
-vicious.register(
-    widget_ram,
-    vicious.widgets.mem,
-    function(widgets, args)
-        local perc = (args[2]/args[3]) * 100
-        perc = 100 - tonumber(perc)
-        return "<span color='" .. get_color_by_percentage(perc) .. "'>" .. args[2] .. "</span>/" .. args[3]
-    end,
-    2
-)
+-- {{{ Memory usage widget
+widget_mem = lain.widgets.mem({
+    settings = function()
+        widget:set_markup("<span color='" .. get_color_by_percentage(100 - ((mem_now.used / mem_now.total) * 100)) .. "'>" .. mem_now.used .. "</span>/" .. mem_now.total)
+    end
+})
 
-widget_ram_icon = wibox.widget.imagebox(get_icon_path("mem"))
+widget_mem_icon = wibox.widget.imagebox(get_icon_path("mem"))
 -- }}}
 
 -- {{{ CPU usage widget
-widget_cpu = wibox.widget.textbox()
-vicious.register(
-    widget_cpu,
-    vicious.widgets.cpu,
-    function(widget, args)
-        perc = 100 - tonumber(args[1])
-        return "<span color='" .. get_color_by_percentage(perc) .. "'>" .. args[1] .. "</span>%"
-    end,
-    2
-)
+widget_cpu = lain.widgets.cpu({
+    settings = function()
+        widget:set_markup("<span color='" .. get_color_by_percentage(100 - cpu_now.usage) .. "'>" .. cpu_now.usage .. "</span>%")
+    end
+})
 
 widget_cpu_icon = wibox.widget.imagebox(get_icon_path("cpu"))
 -- }}}
 
+-- {{{ Network usage widget
+widget_net = lain.widgets.net({
+    units = 1024 * 1024,
+    settings = function()
+        widget:set_markup(string.format("%.01f", net_now.received) .. " / " .. string.format("%.01f", net_now.sent))
+    end
+})
+
+widget_net_icon = wibox.widget.imagebox(get_icon_path("wifi_01"))
+-- }}}
+
 -- {{{ Volume widget
-widget_volume = wibox.widget.textbox()
-vicious.register(
-    widget_volume,
-    vicious.widgets.volume,
-    function (widget, args)
-        local volume_level = "<span color='" .. get_color_by_percentage(args[1]) .. "'>" .. args[1] .. "</span>%"
-        if(args[2] ~= "♫") then
-            volume_level = "<span color='" .. theme.level_colors[5] .. "'>muted</span>"
+widget_volume = lain.widgets.alsa({
+    settings = function()
+        if (volume_now.status ~= "on") then
+            widget:set_markup("<span color='" .. get_color_by_percentage(0) .. "'>muted</span>")
+        else
+            widget:set_markup("<span color='" .. get_color_by_percentage(tonumber(volume_now.level)) .. "'>" .. volume_now.level .. "</span>%")
         end
-        return volume_level
-    end,
-    5,
-    "Master"
-)
+    end
+})
+-- widget_volume = lain.widgets.alsabar()
 
 widget_volume:buttons(awful.util.table.join(
     awful.button({ }, 1, function () ror.run_or_raise('pavucontrol', { class = "Pavucontrol" }) end)
@@ -267,33 +268,25 @@ widget_volume:buttons(awful.util.table.join(
 widget_volume_icon = wibox.widget.imagebox(get_icon_path("spkr_01"))
 -- }}}
 
--- {{{ Now playing widget
-function redrawNowPlayingWidget()
-    local nowplaying_tmp = io.open(vars.confdir .. "scripts/now_playing.tmp")
-    local nowplaying = ""
+-- {{{ MPD widget
+widget_mpd = lain.widgets.mpd({
+    timeout = 3,
+    settings = function()
+        local string = "n/a"
 
-    if nowplaying_tmp then
-        nowplaying = nowplaying_tmp:read()
-        nowplaying_tmp:close()
+        if mpd_now.state ~= "stop" then
+            string = mpd_now.artist .. " - " .. mpd_now.title .. " (" .. mpd_now.album .. ")"
+        end
+
+        -- if string:len() > 45 then
+        --     string = string.sub(string, 0, 42) .. "..."
+        -- end
+
+        widget:set_markup(string)
     end
+})
 
-    os.execute(vars.confdir .. "scripts/now_playing.py --html-safe > " .. vars.confdir .. "scripts/now_playing.tmp &")
-
-    if nowplaying == nil or nowplaying == '' then
-        nowplaying = "n/a"
-    end
-
-    return nowplaying
-end
-
-widget_nowplaying_icon = wibox.widget.imagebox(get_icon_path("phones"))
-widget_nowplaying_icon.visible = false
-
-widget_nowplaying_spacer = wibox.widget.textbox("   ")
-widget_nowplaying_spacer.visible = false
-
-widget_nowplaying = wibox.widget.textbox()
-vicious.register(widget_nowplaying, redrawNowPlayingWidget, nil, 10)
+widget_mpd_icon = wibox.widget.imagebox(get_icon_path("phones"))
 -- }}}
 
 -- Create a systray
@@ -315,9 +308,9 @@ mytaglist.buttons = awful.util.table.join(
     awful.button({             }, 1, awful.tag.viewonly),
     awful.button({ vars.modkey }, 1, awful.client.movetotag),
     awful.button({             }, 3, awful.tag.viewtoggle),
-    awful.button({ vars.modkey }, 3, awful.client.toggletag),
-    awful.button({             }, 4, awful.tag.viewnext),
-    awful.button({             }, 5, awful.tag.viewprev)
+    awful.button({ vars.modkey }, 3, awful.client.toggletag)
+    -- awful.button({             }, 4, awful.tag.viewnext),
+    -- awful.button({             }, 5, awful.tag.viewprev)
 )
 
 mytasklist = {}
@@ -379,14 +372,19 @@ for s = 1, screen.count() do
     table.insert(mywidgets[s]["right"], widget_spacer)
 end
 
--- Add the nowplaying widget to the last screen
-table.insert(mywidgets[screen.count()]["right"], widget_nowplaying_icon)
-table.insert(mywidgets[screen.count()]["right"], widget_nowplaying)
+-- Add the mpd widget to the last screen
+table.insert(mywidgets[screen.count()]["right"], widget_mpd_icon)
+table.insert(mywidgets[screen.count()]["right"], widget_mpd)
 
 -- Add the volume widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_spacer)
 table.insert(mywidgets[screen.count()]["right"], widget_volume_icon)
 table.insert(mywidgets[screen.count()]["right"], widget_volume)
+
+-- Add the net widget to the last screen
+table.insert(mywidgets[screen.count()]["right"], widget_spacer)
+table.insert(mywidgets[screen.count()]["right"], widget_net_icon)
+table.insert(mywidgets[screen.count()]["right"], widget_net)
 
 -- Add the cpu widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_spacer)
@@ -395,13 +393,13 @@ table.insert(mywidgets[screen.count()]["right"], widget_cpu)
 
 -- Add the ram widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_spacer)
-table.insert(mywidgets[screen.count()]["right"], widget_ram_icon)
-table.insert(mywidgets[screen.count()]["right"], widget_ram)
+table.insert(mywidgets[screen.count()]["right"], widget_mem_icon)
+table.insert(mywidgets[screen.count()]["right"], widget_mem)
 
 -- Add the battery widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_spacer)
-table.insert(mywidgets[screen.count()]["right"], widget_battery_icon)
-table.insert(mywidgets[screen.count()]["right"], widget_battery)
+table.insert(mywidgets[screen.count()]["right"], widget_bat_icon)
+table.insert(mywidgets[screen.count()]["right"], widget_bat)
 
 -- Add the datetime widget to the last screen
 table.insert(mywidgets[screen.count()]["right"], widget_spacer)
