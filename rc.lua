@@ -54,7 +54,7 @@ vars.autorun    = {
     "mpd && ncmpcpp pause",
     --vars.home .. "/.dropbox-dist/dropboxd &",
     --"eval `gnome-keyring-daemon`",
-    --"nm-applet &",
+    "nm-applet &",
     --"gnome-screensaver &",
     --"bluetooth-applet &",
     --"blueproximity &",
