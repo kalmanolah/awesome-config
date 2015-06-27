@@ -44,7 +44,7 @@ vars.cmd = {
     lock       = 'slock',
     reboot     = 'systemctl reboot',
     shutdown   = 'systemctl poweroff',
-    screenshot = 'scrot -m -z ~/Pictures/screenshots/\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
+    screenshot = 'scrot -m -z ' .. vars.home .. '/Pictures/screenshots/\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
 }
 
 vars.autorun    = {
@@ -55,7 +55,7 @@ vars.autorun    = {
     --vars.home .. "/.dropbox-dist/dropboxd &",
     --"eval `gnome-keyring-daemon`",
     "nm-applet &",
-    --"gnome-screensaver &",
+    "gnome-screensaver &",
     --"bluetooth-applet &",
     --"blueproximity &",
     --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
@@ -530,7 +530,7 @@ globalkeys = awful.util.table.join(
     awful.key({ vars.modkey, "Control" }, "Tab", revelation),
 
     -- Take a screenshot
-    awful.key({ vars.modkey }, "End", function() awful.util.spawn(vars.cmd.screenshot) end),
+    awful.key({ vars.modkey }, "End", function () awful.util.spawn(vars.cmd.screenshot) end),
 
     -- Sound control (unless it's handled by the underlying gnome session or something)
     awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 10%+") end),
