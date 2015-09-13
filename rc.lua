@@ -211,7 +211,21 @@ widget_datetime_icon = wibox.widget.imagebox(get_icon_path("clock"))
 -- {{{ Battery widget
 widget_bat = lain.widgets.bat({
     settings = function()
-        widget:set_markup("<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%")
+        local markup = ""
+
+        mouse_level = os.capture("cat /sys/class/power_supply/hid-00:1f:20:e2:3a:b0-battery/capacity")
+        if mouse_level ~= "" then
+            markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(mouse_level)) .. "'>" .. mouse_level .. "</span>% "
+        end
+
+        keyboard_level = os.capture("cat /sys/class/power_supply/hid-00:1f:20:a7:d5:01-battery/capacity")
+        if keyboard_level ~= "" then
+            markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(keyboard_level)) .. "'>" .. keyboard_level .. "</span>% "
+        end
+
+        markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%"
+
+        widget:set_markup(markup)
     end
 })
 
