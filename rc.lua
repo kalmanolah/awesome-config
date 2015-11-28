@@ -132,8 +132,11 @@ beautiful.init(vars.confdir .. "themes/" .. vars.theme .. "/theme.lua")
 revelation.init()
 
 -- Set wallpaper
-for s = 1, screen.count() do
-    gears.wallpaper.maximized(beautiful.wallpaper, nil, true)
+-- Only set wallpaper if wallpaper actually exists
+if awful.util.file_readable(beautiful.wallpaper) then
+    for s = 1, screen.count() do
+        gears.wallpaper.maximized(beautiful.wallpaper, nil, true)
+    end
 end
 
 -- Notifications
