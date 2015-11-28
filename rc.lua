@@ -226,6 +226,11 @@ widget_bat = lain.widgets.bat({
             markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(keyboard_level)) .. "'>" .. keyboard_level .. "</span>% "
         end
 
+        extra_battery_level = os.capture("cat /sys/class/power_supply/BAT1/capacity")
+        if extra_battery_level ~= "" then
+            markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(extra_battery_level)) .. "'>" .. extra_battery_level .. "</span>% "
+        end
+
         markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%"
 
         widget:set_markup(markup)
