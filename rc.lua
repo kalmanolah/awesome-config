@@ -41,7 +41,7 @@ vars = {
 vars.browser    = vars.home .. "/misc/firefox/firefox"
 
 vars.cmd = {
-    lock       = 'slock',
+    lock       = 'gnome-screensaver-command --lock',
     reboot     = 'systemctl reboot',
     shutdown   = 'systemctl poweroff',
     screenshot = 'scrot -m -z ' .. vars.home .. '/Pictures/screenshots/\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
