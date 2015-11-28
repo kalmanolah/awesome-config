@@ -27,8 +27,8 @@ if [ -n "${ACTION}" ];then
     # dbus-send --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Suspend
     ;;
   LockScreen)
-    slock
-    # Or gnome-screensaver-command -l
+    # slock
+    gnome-screensaver-command -l
     ;;
   esac
 fi
