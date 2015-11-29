@@ -56,6 +56,7 @@ vars.autorun    = {
     --"eval `gnome-keyring-daemon`",
     "nm-applet &",
     "gnome-screensaver &",
+    "gpg-agent --daemon --write-env-file=" .. vars.home .. "/.gpg-agent-info"
     --"bluetooth-applet &",
     --"blueproximity &",
     --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
