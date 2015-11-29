@@ -55,8 +55,7 @@ vars.autorun    = {
     --vars.home .. "/.dropbox-dist/dropboxd &",
     --"eval `gnome-keyring-daemon`",
     "nm-applet &",
-    "gnome-screensaver &",
-    "gpg-agent --daemon --write-env-file=" .. vars.home .. "/.gpg-agent-info"
+    "gnome-screensaver &"
     --"bluetooth-applet &",
     --"blueproximity &",
     --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
