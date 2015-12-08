@@ -678,7 +678,7 @@ awful.rules.rules = {
 
     { rule = { instance = "ncmpcpp" },
       properties = { tag = tags[screen.count()][7], switchtotag = true } },
-    { rule = { class = "Spotify" },
+    { rule = { instance = "spotify" },
       properties = { tag = tags[screen.count()][7], switchtotag = true } },
     { rule = { instance = "irssi" },
       properties = { tag = tags[screen.count()][8], switchtotag = true } },
