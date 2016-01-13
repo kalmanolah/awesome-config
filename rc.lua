@@ -217,23 +217,22 @@ widget_bat = lain.widgets.bat({
     settings = function()
         local markup = ""
 
-        mouse_level = os.capture("cat /sys/class/power_supply/hid-00:1f:20:e2:3a:b0-battery/capacity")
-        if mouse_level ~= "" then
-            markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(mouse_level)) .. "'>" .. mouse_level .. "</span>% "
-        end
+        local devices = {
+            "hid-d4:6c:3c:0d:7a:35-battery",
+            "hid-00:1f:20:e2:3a:b0-battery",
+            "hid-00:1f:20:a7:d5:01-battery",
+            "BAT1"
+        }
 
-        keyboard_level = os.capture("cat /sys/class/power_supply/hid-00:1f:20:a7:d5:01-battery/capacity")
-        if keyboard_level ~= "" then
-            markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(keyboard_level)) .. "'>" .. keyboard_level .. "</span>% "
-        end
+        for i, device in pairs(devices) do
+            local level = os.capture("cat /sys/class/power_supply/" .. device .. "/capacity")
 
-        extra_battery_level = os.capture("cat /sys/class/power_supply/BAT1/capacity")
-        if extra_battery_level ~= "" then
-            markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(extra_battery_level)) .. "'>" .. extra_battery_level .. "</span>% "
+            if level ~= "" then
+                markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(level)) .. "'>" .. level .. "</span>% "
+            end
         end
 
         markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%"
-
         widget:set_markup(markup)
     end
 })
