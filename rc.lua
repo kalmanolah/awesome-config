@@ -50,7 +50,7 @@ vars.cmd = {
 vars.autorun    = {
     vars.home .. "/bin/notify-listener.py &",
     "numlockx on",
-    --"setxkbmap be",
+    "setxkbmap be",
     "mpd && ncmpcpp pause",
     --vars.home .. "/.dropbox-dist/dropboxd &",
     --"eval `gnome-keyring-daemon`",
