@@ -317,8 +317,8 @@ systray_fixer = drawin({})
 systray_visible = false
 systray = wibox.widget.systray()
 systray_container = wibox.layout.constraint()
-systray_container:set_widget(systray)
-systray_container:set_strategy("min")
+-- systray_container:set_widget(systray)
+systray_container:set_strategy("exact")
 systray_container:set_width(1)
 
 -- Create a wibox for each screen and add it
