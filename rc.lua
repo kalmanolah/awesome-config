@@ -21,8 +21,6 @@ local menubar = require("menubar")
 local lain        = require("lain")
 local runonce     = require("runonce")
 local vicious     = require("vicious")
-local ror         = require("aweror")
-local revelation  = require("revelation")
 local cheeky      = require("cheeky")
 local helpers     = require("helpers")
 
@@ -92,6 +90,17 @@ vars.tags = {
     {"九", vars.layouts[2]}
 }
 
+vars.rorkeys = {
+    ["f"]={vars.browser, "Firefox"},
+    ["t"]={"icedove","Icedove"},
+    ["l"]={"spotify", "Spotify"},
+    ["s"]={"skype", "Skype", "name"},
+    ["i"]={"urxvt -name irssi -e irssi", "irssi", "instance"},
+    ["m"]={"urxvt -name ncmpcpp -e ncmpcpp", "ncmpcpp", "instance"},
+    ["n"]={"nautilus", "Nautilus"},
+    ["e"]={"/opt/sublime_text/sublime_text", "sublime text"}
+}
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -129,9 +138,6 @@ end
 
 -- Initialize theme
 beautiful.init(vars.confdir .. "themes/" .. vars.theme .. "/theme.lua")
-
--- Initialize revelation
-revelation.init()
 
 -- Set wallpaper
 -- Only set wallpaper if wallpaper actually exists
@@ -549,9 +555,6 @@ globalkeys = awful.util.table.join(
     -- Restart awesome
     awful.key({ vars.modkey, "Control" }, "r", awesome.restart),
 
-    -- Start Revelation
-    awful.key({ vars.modkey, "Control" }, "Tab", revelation),
-
     -- Start Cheeky
     awful.key({ vars.modkey }, "=", function()
         local offset = screen[mouse.screen].workarea
@@ -623,17 +626,21 @@ for i = 1, #tags[1] do
     )
 end
 
--- Generate and add the 'run or raise' key bindings to the globalkeys table
-globalkeys = awful.util.table.join(globalkeys, ror.genkeys(vars.modkey, {
-    ["f"]={vars.browser, "Firefox"},
-    ["t"]={"icedove","Icedove"},
-    ["l"]={"spotify", "Spotify"},
-    ["s"]={"skype", "Skype", "name"},
-    ["i"]={"urxvt -name irssi -e irssi", "irssi", "instance"},
-    ["m"]={"urxvt -name ncmpcpp -e ncmpcpp", "ncmpcpp", "instance"},
-    ["n"]={"nautilus", "Nautilus"},
-    ["e"]={"/opt/sublime_text/sublime_text", "sublime text"}
-}))
+-- Iterate over run-or-raise keybindings and add them to the global keys table
+-- along with a generated maycher
+for key, options in pairs(vars.rorkeys) do
+    globalkeys = awful.util.table.join(globalkeys, awful.key({ vars.modkey }, key, function ()
+        local run_cmd = options[1]
+        local match_query = {}
+        match_query[options[3] or 'class'] = options[2]
+
+        local matcher = function (c)
+            return awful.rules.match(c, match_query)
+        end
+
+        awful.client.run_or_raise(run_cmd, matcher)
+    end))
+end
 
 -- Set global keys
 root.keys(globalkeys)
