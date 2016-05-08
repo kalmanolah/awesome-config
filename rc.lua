@@ -23,6 +23,7 @@ local runonce     = require("runonce")
 local vicious     = require("vicious")
 local ror         = require("aweror")
 local revelation  = require("revelation")
+local cheeky      = require("cheeky")
 local helpers     = require("helpers")
 
 -- Set up some variables
@@ -551,6 +552,26 @@ globalkeys = awful.util.table.join(
     -- Start Revelation
     awful.key({ vars.modkey, "Control" }, "Tab", revelation),
 
+    -- Start Cheeky
+    awful.key({ vars.modkey }, "=", function()
+        local offset = screen[mouse.screen].workarea
+        local width = 600
+
+        cheeky.util.switcher({
+            show_tag = true,
+            show_screen = true,
+            notification_hide = true,
+            coords = {
+                x = (offset.width - width) / 2 + offset.x,
+                y = (offset.height) / 4 + offset.y
+            },
+            menu_theme = {
+                height = 30,
+                width = width
+            }
+        })
+    end),
+
     -- Take a screenshot
     awful.key({ vars.modkey }, "End", function () awful.util.spawn(vars.cmd.screenshot) end),
 
@@ -677,7 +698,7 @@ awful.rules.rules = {
 
     { rule = { instance = "ncmpcpp" },
       properties = { tag = tags[screen.count()][7], switchtotag = true } },
-    { rule = { instance = "spotify" },
+    { rule = { class = "Spotify" },
       properties = { tag = tags[screen.count()][7], switchtotag = true } },
     { rule = { instance = "irssi" },
       properties = { tag = tags[screen.count()][8], switchtotag = true } },
