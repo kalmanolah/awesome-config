@@ -584,8 +584,8 @@ globalkeys = awful.util.table.join(
     awful.key({ }, "XF86AudioMicMute", function () awful.util.spawn("amixer set Capture toggle") end),
 
     -- Screen backlight control
-    awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 10") end),
-    awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn("xbacklight -dec 10") end),
+    awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 5") end),
+    awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn("xbacklight -dec 5") end),
 
     -- Power management stuff
     awful.key({ vars.modkey, "Control" }, "l", function() awful.util.spawn(vars.cmd.lock) end),
