@@ -55,10 +55,10 @@ vars.autorun    = {
     --"eval `gnome-keyring-daemon`",
     "nm-applet &",
     "gnome-screensaver &",
-    "gpg-agent --daemon --use-standard-socket"
+    "gpg-agent --daemon --use-standard-socket",
     --"bluetooth-applet &",
     --"blueproximity &",
-    --"compton -cCGb -l -10 -t -10 -r 10 -o 0.4"
+    "compton -cCGb -l -10 -t -10 -r 10 -o 0.25"
 }
 
 vars.layouts = {
@@ -75,19 +75,20 @@ vars.layouts = {
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier,
     lain.layout.termfair,
-    lain.layout.centerfair
+    lain.layout.centerfair,
+    lain.layout.uselessfair
 }
 
 vars.tags = {
-    {"一", vars.layouts[2]},
-    {"二", vars.layouts[2]},
-    {"三", vars.layouts[2]},
+    {"一", vars.layouts[15]},
+    {"二", vars.layouts[15]},
+    {"三", vars.layouts[15]},
     {"四", vars.layouts[13]},
-    {"五", vars.layouts[2]},
-    {"六", vars.layouts[2]},
-    {"七", vars.layouts[2]},
-    {"八", vars.layouts[2]},
-    {"九", vars.layouts[2]}
+    {"五", vars.layouts[15]},
+    {"六", vars.layouts[15]},
+    {"七", vars.layouts[15]},
+    {"八", vars.layouts[15]},
+    {"九", vars.layouts[15]}
 }
 
 vars.rorkeys = {
