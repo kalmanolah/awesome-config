@@ -58,7 +58,7 @@ vars.autorun    = {
     "gpg-agent --daemon --use-standard-socket",
     --"bluetooth-applet &",
     --"blueproximity &",
-    "compton -cCGb -l -10 -t -10 -r 10 -o 0.25"
+    -- "compton -cCGb -l -10 -t -10 -r 10 -o 0.25"
 }
 
 vars.layouts = {
