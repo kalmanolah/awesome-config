@@ -292,7 +292,11 @@ widget_volume = lain.widgets.alsa({
 -- widget_volume = lain.widgets.alsabar()
 
 widget_volume:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () ror.run_or_raise('pavucontrol', { class = "Pavucontrol" }) end)
+    awful.button({ }, 1, function ()
+        awful.client.run_or_raise('pavucontrol', function (c)
+            return awful.rules.match(c, { class = "Pavucontrol" })
+        end)
+    end)
 ))
 
 widget_volume_icon = wibox.widget.imagebox(get_icon_path("spkr_01"))
