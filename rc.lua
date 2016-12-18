@@ -149,6 +149,7 @@ if awful.util.file_readable(beautiful.wallpaper) then
 end
 
 -- Notifications
+naughty.config.defaults.icon_size = 76
 naughty.config.presets.normal.opacity = 0.8
 naughty.config.presets.low.opacity = 0.8
 naughty.config.presets.critical.opacity = 0.8
