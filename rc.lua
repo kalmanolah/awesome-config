@@ -99,7 +99,7 @@ vars.rorkeys = {
     ["i"]={"urxvt -name irssi -e irssi", "irssi", "instance"},
     ["m"]={"urxvt -name ncmpcpp -e ncmpcpp", "ncmpcpp", "instance"},
     ["n"]={"nautilus", "Nautilus"},
-    ["e"]={"/opt/sublime_text/sublime_text", "sublime text"}
+    ["e"]={"atom", "atom"}
 }
 
 -- {{{ Error handling
@@ -225,23 +225,29 @@ widget_datetime_icon = wibox.widget.imagebox(get_icon_path("clock"))
 widget_bat = lain.widgets.bat({
     settings = function()
         local markup = ""
-
         local devices = {
-            "hid-d4:6c:3c:0d:7a:35-battery",
-            "hid-00:1f:20:e2:3a:b0-battery",
-            "hid-00:1f:20:a7:d5:01-battery",
-            "BAT1"
+            {"KB", "hid-00:1f:20:a7:d5:01-battery"},
+            {"MS", "hid-d4:6c:3c:0d:7a:38-battery"},
+            {"BAT0", "BAT0"},
+            {"BAT1", "BAT1"},
         }
 
-        for i, device in pairs(devices) do
-            local level = os.capture("cat /sys/class/power_supply/" .. device .. "/capacity")
+        for _, device in pairs(devices) do
+            local path = "/sys/class/power_supply/" .. device[2] .. "/capacity"
 
-            if level ~= "" then
-                markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(level)) .. "'>" .. level .. "</span>% "
+            if awful.util.file_readable(path) then
+                local level = os.capture("cat " .. path)
+
+                if level ~= "" then
+                    markup = markup .. "" .. device[1] .. ":<span color='" .. get_color_by_percentage(tonumber(level)) .. "'>" .. level .. "</span>% "
+                end
             end
         end
 
-        markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%"
+        -- Remove the last char from the markup string (the space)
+        markup = (markup:gsub("^%s*(.-)%s*$", "%1"))
+
+        -- markup = markup .. "<span color='" .. get_color_by_percentage(tonumber(bat_now.perc)) .. "'>" .. bat_now.perc .. "</span>%"
         widget:set_markup(markup)
     end
 })
