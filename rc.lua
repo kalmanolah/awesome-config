@@ -93,7 +93,7 @@ vars.tags = {
 
 vars.rorkeys = {
     ["f"]={vars.browser, "Firefox"},
-    ["t"]={"icedove","Icedove"},
+    ["t"]={"thunderbird","Thunderbird"},
     ["l"]={"spotify", "Spotify"},
     ["s"]={"skype", "Skype", "name"},
     ["i"]={"urxvt -name irssi -e irssi", "irssi", "instance"},
