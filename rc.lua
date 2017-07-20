@@ -40,10 +40,11 @@ vars = {
 vars.browser    = vars.home .. "/misc/firefox/firefox"
 
 vars.cmd = {
-    lock       = 'gnome-screensaver-command --lock',
-    reboot     = 'systemctl reboot',
-    shutdown   = 'systemctl poweroff',
-    screenshot = 'scrot -m -z ' .. vars.home .. '/Pictures/screenshots/\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
+    lock               = 'gnome-screensaver-command --lock',
+    reboot             = 'systemctl reboot',
+    shutdown           = 'systemctl poweroff',
+    screenshot         = 'scrot -m -z ' .. vars.home .. '/Pictures/screenshots/full_\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
+    screenshot_partial = 'sleep 0.2 && scrot -b -z -s ' .. vars.home .. '/Pictures/screenshots/partial_\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
 }
 
 vars.autorun    = {
@@ -589,6 +590,7 @@ globalkeys = awful.util.table.join(
 
     -- Take a screenshot
     awful.key({ vars.modkey }, "End", function () awful.util.spawn(vars.cmd.screenshot) end),
+    awful.key({ vars.modkey }, "Home", function () awful.util.spawn_with_shell(vars.cmd.screenshot_partial) end),
 
     -- Sound control (unless it's handled by the underlying gnome session or something)
     awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 10%+") end),
