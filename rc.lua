@@ -43,9 +43,17 @@ vars.cmd = {
     lock               = 'gnome-screensaver-command --lock',
     reboot             = 'systemctl reboot',
     shutdown           = 'systemctl poweroff',
-    screenshot         = 'scrot -m -z ' .. vars.home .. '/Pictures/screenshots/full_\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
-    screenshot_partial = 'sleep 0.2 && scrot -b -z -s ' .. vars.home .. '/Pictures/screenshots/partial_\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\'',
 }
+
+-- screenshot vars & commands
+vars.screenshot_path = vars.home .. '/Pictures/screenshots'
+vars.screenshot_file = vars.screenshot_path .. '/full_\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\''
+vars.screenshot_file_partial = vars.screenshot_path .. '/partial_\'%Y-%m-%d_%H-%M-%S_$wx$h_scrot.png\''
+
+vars.cmd.screenshot = 'scrot -m -z ' .. vars.screenshot_file
+vars.cmd.screenshot_partial = 'sleep 0.2 && scrot -b -z -s ' .. vars.screenshot_file_partial
+vars.cmd.screenshot_clipboard = 'export TMPFILE=`mktemp`.png && scrot -m -z $TMPFILE && xclip -selection clipboard -t `mimetype -b $TMPFILE` $TMPFILE && rm $TMPFILE -f'
+vars.cmd.screenshot_partial_clipboard = 'export TMPFILE=`mktemp`.png && sleep 0.2 && scrot -b -z -s $TMPFILE && xclip -selection clipboard -t `mimetype -b $TMPFILE` $TMPFILE && rm $TMPFILE -f'
 
 vars.autorun    = {
     vars.home .. "/bin/notify-listener.py &",
@@ -589,8 +597,10 @@ globalkeys = awful.util.table.join(
     end),
 
     -- Take a screenshot
-    awful.key({ vars.modkey }, "End", function () awful.util.spawn(vars.cmd.screenshot) end),
+    awful.key({ vars.modkey }, "End", function () awful.util.spawn_with_shell(vars.cmd.screenshot) end),
     awful.key({ vars.modkey }, "Home", function () awful.util.spawn_with_shell(vars.cmd.screenshot_partial) end),
+    awful.key({ vars.modkey, "Control" }, "End", function () awful.util.spawn_with_shell(vars.cmd.screenshot_clipboard) end),
+    awful.key({ vars.modkey, "Control" }, "Home", function () awful.util.spawn_with_shell(vars.cmd.screenshot_partial_clipboard) end),
 
     -- Sound control (unless it's handled by the underlying gnome session or something)
     awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 10%+") end),
