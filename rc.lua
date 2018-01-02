@@ -37,7 +37,8 @@ vars = {
     icons    = 'poached-ivory-22x22'
 }
 
-vars.browser    = vars.home .. "/misc/firefox/firefox"
+vars.browser = vars.home .. "/misc/firefox/firefox"
+vars.email   = vars.home .. "/misc/thunderbird/thunderbird"
 
 vars.cmd = {
     lock               = 'gnome-screensaver-command --lock',
@@ -102,7 +103,7 @@ vars.tags = {
 
 vars.rorkeys = {
     ["f"]={vars.browser, "Firefox"},
-    ["t"]={"thunderbird","Thunderbird"},
+    ["t"]={vars.email,"Thunderbird"},
     ["l"]={"spotify", "Spotify"},
     ["s"]={"skype", "Skype", "name"},
     ["i"]={"urxvt -name irssi -e irssi", "irssi", "instance"},
