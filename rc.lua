@@ -236,21 +236,18 @@ widget_bat = lain.widgets.bat({
     settings = function()
         local markup = ""
         local devices = {
-            {"KB", "hid-00:1f:20:a7:d5:01-battery"},
-            {"MS", "hid-d4:6c:3c:0d:7a:38-battery"},
+            {"MS", "mouse"},
+            {"KB", "keyboard"},
             {"BAT0", "BAT0"},
             {"BAT1", "BAT1"},
         }
 
         for _, device in pairs(devices) do
-            local path = "/sys/class/power_supply/" .. device[2] .. "/capacity"
+            local cmd = "upower -i $(upower -e | grep '" .. device[2] .. "') | grep 'percentage:' | sed -r 's/^\\s+percentage:\\s+([0-9]+)%$/\\1/'"
+            local level = os.capture(cmd)
 
-            if awful.util.file_readable(path) then
-                local level = os.capture("cat " .. path)
-
-                if level ~= "" then
-                    markup = markup .. "" .. device[1] .. ":<span color='" .. get_color_by_percentage(tonumber(level)) .. "'>" .. level .. "</span>% "
-                end
+            if (level ~= nil) and (level ~= "") then
+                markup = markup .. "" .. device[1] .. ":<span color='" .. get_color_by_percentage(tonumber(level)) .. "'>" .. level .. "</span>% "
             end
         end
 
